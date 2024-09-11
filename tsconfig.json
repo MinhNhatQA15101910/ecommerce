@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "ES2016",
-    "lib": ["ES2016"],
+    "target": "ES2023",
+    "lib": ["ES2023"],
     "types": ["reflect-metadata"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,

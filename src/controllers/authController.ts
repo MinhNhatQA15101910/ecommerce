@@ -2,8 +2,10 @@ import { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import { INTERFACE_TYPE } from "../utils/appConst";
 import { IUserRepository } from "../interfaces/IUserRepository";
-import { ErrorCodes } from "../exceptions/rootException";
+import { ErrorCodes } from "../exceptions/httpException";
 import { BadRequestException } from "../exceptions/badRequestException";
+import { UnprocessableEntityException } from "../exceptions/unprocessableEntityException";
+import { SignupSchema } from "../schemas/users";
 
 @injectable()
 export class AuthController {
@@ -16,25 +18,36 @@ export class AuthController {
   }
 
   async signup(req: Request, res: Response, next: NextFunction) {
-    const { email, password, name } = req.body;
+    try {
+      SignupSchema.parse(req.body);
+      const { email, password, name } = req.body;
 
-    let user = await this._userRepository.getUser(email);
-    if (user) {
+      let user = await this._userRepository.getUser(email);
+      if (user) {
+        next(
+          new BadRequestException(
+            "User already exists!",
+            ErrorCodes.USER_ALREADY_EXISTS
+          )
+        );
+      }
+
+      user = await this._userRepository.createUser({
+        name,
+        email,
+        password,
+      });
+
+      res.json(user);
+    } catch (err: any) {
       next(
-        new BadRequestException(
-          "User already exists!",
-          ErrorCodes.USER_ALREADY_EXISTS
+        new UnprocessableEntityException(
+          "Unprocessable entity",
+          ErrorCodes.UNPROCESSABLE_ENTITY,
+          err?.issues
         )
       );
     }
-
-    user = await this._userRepository.createUser({
-      name,
-      email,
-      password,
-    });
-
-    res.json(user);
   }
 
   async login(req: Request, res: Response) {
