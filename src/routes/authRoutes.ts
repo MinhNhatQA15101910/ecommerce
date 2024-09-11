@@ -5,6 +5,7 @@ import { IUserRepository } from "../interfaces/IUserRepository";
 import { INTERFACE_TYPE } from "../utils/appConst";
 import { UserRepository } from "../repositories/userRepository";
 import { errorHandler } from "../errorHandler";
+import { authMiddleware } from "../middlewares/authMiddleware";
 
 const container = new Container();
 
@@ -27,6 +28,11 @@ authRoutes.post(
 authRoutes.post(
   "/login",
   errorHandler(authController.login.bind(authController))
+);
+authRoutes.get(
+  "/me",
+  [authMiddleware],
+  errorHandler(authController.me.bind(authController))
 );
 
 export default authRoutes;

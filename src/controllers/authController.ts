@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import { INTERFACE_TYPE } from "../utils/appConst";
 import { IUserRepository } from "../interfaces/IUserRepository";
@@ -18,7 +18,7 @@ export class AuthController {
     this._userRepository = userRepository;
   }
 
-  async signup(req: Request, res: Response, next: NextFunction) {
+  async signup(req: Request, res: Response) {
     let parseResult = SignupSchema.safeParse(req.body);
     if (parseResult.error) {
       throw new UnprocessableEntityException(
@@ -27,7 +27,7 @@ export class AuthController {
         parseResult.error?.errors
       );
     }
-    
+
     const { email, password, name } = req.body;
 
     let user = await this._userRepository.getUser(email);
@@ -69,5 +69,9 @@ export class AuthController {
     const token = this._userRepository.generateToken(user.id);
 
     res.json({ user, token });
+  }
+
+  async me(req: any, res: Response) {
+    res.json(req.user);
   }
 }
