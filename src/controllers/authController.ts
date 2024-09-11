@@ -1,7 +1,9 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import { INTERFACE_TYPE } from "../utils/appConst";
 import { IUserRepository } from "../interfaces/IUserRepository";
+import { ErrorCodes } from "../exceptions/rootException";
+import { BadRequestException } from "../exceptions/badRequestException";
 
 @injectable()
 export class AuthController {
@@ -13,12 +15,17 @@ export class AuthController {
     this._userRepository = userRepository;
   }
 
-  async signup(req: Request, res: Response) {
+  async signup(req: Request, res: Response, next: NextFunction) {
     const { email, password, name } = req.body;
 
     let user = await this._userRepository.getUser(email);
     if (user) {
-      throw Error("User already exists!");
+      next(
+        new BadRequestException(
+          "User already exists!",
+          ErrorCodes.USER_ALREADY_EXISTS
+        )
+      );
     }
 
     user = await this._userRepository.createUser({
