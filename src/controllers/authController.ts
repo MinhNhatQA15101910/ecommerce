@@ -17,6 +17,9 @@ export class AuthController {
     const { email, password, name } = req.body;
 
     let user = await this._userRepository.getUser(email);
+    if (user) {
+      throw Error("User already exists!");
+    }
 
     user = await this._userRepository.createUser({
       name,
@@ -25,5 +28,23 @@ export class AuthController {
     });
 
     res.json(user);
+  }
+
+  async login(req: Request, res: Response) {
+    const { email, password } = req.body;
+
+    let user = await this._userRepository.getUser(email);
+
+    if (!user) {
+      throw Error("User does not exists!");
+    }
+
+    if (!this._userRepository.comparePassword(password, user.password)) {
+      throw Error("Incorrect password!");
+    }
+
+    const token = this._userRepository.generateToken(user.id);
+
+    res.json({ user, token });
   }
 }

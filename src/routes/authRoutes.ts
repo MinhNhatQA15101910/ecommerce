@@ -20,5 +20,6 @@ const authController = container.get<AuthController>(
 );
 
 authRoutes.post("/signup", authController.signup.bind(authController));
+authRoutes.post("/login", authController.login.bind(authController));
 
 export default authRoutes;
