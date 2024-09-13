@@ -6,7 +6,6 @@ import { ErrorCodes } from "../exceptions/httpException";
 import { BadRequestException } from "../exceptions/badRequestException";
 import { SignupSchema } from "../schemas/users";
 import { NotFoundException } from "../exceptions/notFoundException";
-import { UnprocessableEntityException } from "../exceptions/unprocessableEntityException";
 
 @injectable()
 export class AuthController {
