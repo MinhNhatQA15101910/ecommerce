@@ -6,10 +6,8 @@ export const SignupSchema = z.object({
   password: z.string().min(8),
 });
 
-export const AddressSchema = z.object({
-  lineOne: z.string(),
-  lineTwo: z.string().nullable(),
-  city: z.string(),
-  country: z.string(),
-  pincode: z.string().length(6)
+export const UpdateUserSchema = z.object({
+  name: z.string().optional(),
+  defaultShippingAddressId: z.number().optional(),
+  defaultBillingAddressId: z.number().optional(),
 });
