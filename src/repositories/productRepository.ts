@@ -20,7 +20,6 @@ export class ProductRepository implements IProductRepository {
   }
 
   async getProductById(id: number): Promise<any> {
-    console.log(id);
     const product = await prismaClient.product.findFirstOrThrow({
       where: { id },
     });
