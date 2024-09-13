@@ -23,6 +23,7 @@ export class AuthController {
     const { email, password, name } = req.body;
 
     let user = await this._userRepository.getUser(email);
+    console.log(user);
     if (user) {
       throw new BadRequestException(
         "User already exists!",

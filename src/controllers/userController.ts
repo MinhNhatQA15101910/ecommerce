@@ -36,16 +36,26 @@ export class UserController {
     res.json(address);
   }
 
-  async deleteAddress(req: Request, res: Response) {
+  async deleteAddress(req: any, res: Response) {
+    let address: Address;
     try {
-      await this._addressRepository.deleteAddress(+req.params.id);
-      res.json({ success: true });
+      address = await this._addressRepository.getAddressById(+req.params.id);
     } catch (error) {
       throw new NotFoundException(
         "Address not found.",
         ErrorCodes.ADDRESS_NOT_FOUND
       );
     }
+
+    if (address.userId !== req.user.id) {
+      throw new BadRequestException(
+        "Address does not belong to user.",
+        ErrorCodes.ADDRESS_DOES_NOT_BELONG
+      );
+    }
+
+    await this._addressRepository.deleteAddress(+req.params.id);
+    res.json({ success: true });
   }
 
   async getAddresses(req: any, res: Response) {

@@ -1,4 +1,7 @@
+import { CartItem } from "@prisma/client";
+
 export interface ICartRepository {
-  createCartItem(cartItem: any): Promise<any>;
-  deleteCartItem(cartItemId: number): Promise<any>;
+  createCartItem(cartItem: any): Promise<CartItem>;
+  deleteCartItem(cartItemId: number): Promise<void>;
+  getCartItemById(cartItemId: number): Promise<CartItem>;
 }

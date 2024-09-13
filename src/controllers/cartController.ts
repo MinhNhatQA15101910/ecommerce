@@ -46,7 +46,24 @@ export class CartController {
     res.json(cartItem);
   }
 
-  async deleteItemFromCart(req: Request, res: Response) {
+  async deleteItemFromCart(req: any, res: Response) {
+    let cartItem;
+    try {
+      cartItem = await this._cartRepository.getCartItemById(+req.params.id);
+    } catch (error) {
+      throw new NotFoundException(
+        "Cart item not found.",
+        ErrorCodes.CART_ITEM_NOT_FOUND
+      );
+    }
+
+    if (cartItem.userId !== req.user.id) {
+      throw new NotFoundException(
+        "Cart item does not belong to user.",
+        ErrorCodes.CART_ITEM_DOES_NOT_BELONG
+      );
+    }
+
     await this._cartRepository.deleteCartItem(+req.params.id);
     res.json({ success: true });
   }

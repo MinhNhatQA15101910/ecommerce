@@ -1,10 +1,11 @@
 import { injectable } from "inversify";
 import { IProductRepository } from "../interfaces/IProductRepository";
 import { prismaClient } from "..";
+import { Product } from "@prisma/client";
 
 @injectable()
 export class ProductRepository implements IProductRepository {
-  async createProduct(product: any): Promise<any> {
+  async createProduct(product: any): Promise<Product> {
     product = await prismaClient.product.create({
       data: {
         ...product,
@@ -15,18 +16,18 @@ export class ProductRepository implements IProductRepository {
     return product;
   }
 
-  async deleteProduct(productId: number): Promise<any> {
+  async deleteProduct(productId: number): Promise<void> {
     await prismaClient.product.delete({ where: { id: productId } });
   }
 
-  async getProductById(id: number): Promise<any> {
+  async getProductById(id: number): Promise<Product> {
     const product = await prismaClient.product.findFirstOrThrow({
       where: { id },
     });
     return product;
   }
 
-  async getProducts(skip: number, take: number): Promise<any[]> {
+  async getProducts(skip: number, take: number): Promise<Product[]> {
     const products = await prismaClient.product.findMany({ skip, take });
     return products;
   }
@@ -35,7 +36,7 @@ export class ProductRepository implements IProductRepository {
     return await prismaClient.product.count();
   }
 
-  async updateProduct(id: number, product: any): Promise<any> {
+  async updateProduct(id: number, product: any): Promise<Product> {
     const updatedProduct = await prismaClient.product.update({
       where: { id },
       data: product,

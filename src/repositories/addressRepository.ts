@@ -1,10 +1,11 @@
 import { injectable } from "inversify";
 import { prismaClient } from "..";
 import { IAddressRepository } from "../interfaces/IAddressRepository";
+import { Address } from "@prisma/client";
 
 @injectable()
 export class AddressRepository implements IAddressRepository {
-  async addAddress(userId: number, addressData: any): Promise<any> {
+  async addAddress(userId: number, addressData: any): Promise<Address> {
     const address = await prismaClient.address.create({
       data: {
         ...addressData,
@@ -14,18 +15,18 @@ export class AddressRepository implements IAddressRepository {
     return address;
   }
 
-  async deleteAddress(addressId: number): Promise<any> {
+  async deleteAddress(addressId: number): Promise<void> {
     await prismaClient.address.delete({ where: { id: addressId } });
   }
 
-  async getAddressById(addressId: number): Promise<any> {
+  async getAddressById(addressId: number): Promise<Address> {
     const address = await prismaClient.address.findFirstOrThrow({
       where: { id: addressId },
     });
     return address;
   }
 
-  async getAddresses(userId: number): Promise<any> {
+  async getAddresses(userId: number): Promise<Address[]> {
     const addresses = await prismaClient.address.findMany({
       where: { userId },
     });
