@@ -15,6 +15,10 @@ export class ProductRepository implements IProductRepository {
     return product;
   }
 
+  async deleteProduct(productId: number): Promise<any> {
+    await prismaClient.product.delete({ where: { id: productId } });
+  }
+
   async getProductById(id: number): Promise<any> {
     console.log(id);
     const product = await prismaClient.product.findFirstOrThrow({

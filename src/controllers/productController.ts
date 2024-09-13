@@ -4,6 +4,7 @@ import { IProductRepository } from "../interfaces/IProductRepository";
 import { INTERFACE_TYPE } from "../utils/appConst";
 import { NotFoundException } from "../exceptions/notFoundException";
 import { ErrorCodes } from "../exceptions/httpException";
+import { ProductSchema } from "../schemas/products";
 
 @injectable()
 export class ProductController {
@@ -17,6 +18,8 @@ export class ProductController {
   }
 
   async createProduct(req: Request, res: Response) {
+    ProductSchema.parse(req.body);
+
     const product = await this._productRepository.createProduct(req.body);
     res.json(product);
   }
@@ -45,7 +48,17 @@ export class ProductController {
     }
   }
 
-  async deleteProduct(req: Request, res: Response) {}
+  async deleteProduct(req: Request, res: Response) {
+    try {
+      await this._productRepository.deleteProduct(+req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      throw new NotFoundException(
+        "Address not found.",
+        ErrorCodes.PRODUCT_NOT_FOUND
+      );
+    }
+  }
 
   async getProducts(req: Request, res: Response) {
     const count = await this._productRepository.getProductsCount();
