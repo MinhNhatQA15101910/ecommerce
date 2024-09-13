@@ -28,4 +28,28 @@ productRoutes.post(
   errorHandler(productController.createProduct.bind(productController))
 );
 
+productRoutes.put(
+  "/:id",
+  [authMiddleware, adminMiddleware],
+  errorHandler(productController.updateProduct.bind(productController))
+);
+
+productRoutes.delete(
+  "/:id",
+  [authMiddleware, adminMiddleware],
+  errorHandler(productController.deleteProduct.bind(productController))
+);
+
+productRoutes.get(
+  "/",
+  [authMiddleware, adminMiddleware],
+  errorHandler(productController.getProducts.bind(productController))
+);
+
+productRoutes.get(
+  "/:id",
+  [authMiddleware, adminMiddleware],
+  errorHandler(productController.getProductById.bind(productController))
+);
+
 export default productRoutes;
