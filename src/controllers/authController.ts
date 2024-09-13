@@ -19,14 +19,7 @@ export class AuthController {
   }
 
   async signup(req: Request, res: Response) {
-    let parseResult = SignupSchema.safeParse(req.body);
-    if (parseResult.error) {
-      throw new UnprocessableEntityException(
-        "Unprocessable entity",
-        ErrorCodes.UNPROCESSABLE_ENTITY,
-        parseResult.error?.errors
-      );
-    }
+    SignupSchema.parse(req.body);
 
     const { email, password, name } = req.body;
 
