@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import { Request, Response } from "express";
-import { AddToCartSchema } from "../schemas/carts";
+import { AddToCartSchema, ChangeQuantitySchema } from "../schemas/carts";
 import { NotFoundException } from "../exceptions/notFoundException";
 import { ErrorCodes } from "../exceptions/httpException";
 import { Product } from "@prisma/client";
@@ -82,7 +82,36 @@ export class CartController {
     res.json({ success: true });
   }
 
-  async changeQuantity(req: Request, res: Response) {}
+  async changeQuantity(req: any, res: Response) {
+    const validatedData = ChangeQuantitySchema.parse(req.body);
 
-  async getCart(req: Request, res: Response) {}
+    let cartItem;
+    try {
+      cartItem = await this._cartRepository.getCartItemById(+req.params.id);
+    } catch (error) {
+      throw new NotFoundException(
+        "Cart item not found.",
+        ErrorCodes.CART_ITEM_NOT_FOUND
+      );
+    }
+
+    if (cartItem.userId !== req.user.id) {
+      throw new NotFoundException(
+        "Cart item does not belong to user.",
+        ErrorCodes.CART_ITEM_DOES_NOT_BELONG
+      );
+    }
+
+    const updatedCart = await this._cartRepository.updateQuantity(
+      +req.params.id,
+      validatedData.quantity
+    );
+
+    res.json(updatedCart);
+  }
+
+  async getCart(req: any, res: Response) {
+    const cart = await this._cartRepository.getCartById(req.user.id);
+    res.json(cart);
+  }
 }

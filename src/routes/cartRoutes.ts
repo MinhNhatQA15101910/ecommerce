@@ -33,4 +33,22 @@ cartRoutes.post(
   errorHandler(cartController.addItemToCart.bind(cartController))
 );
 
+cartRoutes.delete(
+  "/:id",
+  [authMiddleware],
+  errorHandler(cartController.deleteItemFromCart.bind(cartController))
+);
+
+cartRoutes.put(
+  "/:id",
+  [authMiddleware],
+  errorHandler(cartController.changeQuantity.bind(cartController))
+);
+
+cartRoutes.get(
+  "/",
+  [authMiddleware],
+  errorHandler(cartController.getCart.bind(cartController))
+);
+
 export default cartRoutes;
