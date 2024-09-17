@@ -37,6 +37,20 @@ export class CartController {
       );
     }
 
+    console.log(product);
+
+    const existingCartItem = await this._cartRepository.getCartItemByProductId(
+      product.id
+    );
+    if (existingCartItem) {
+      const cartItem = await this._cartRepository.updateQuantity(
+        existingCartItem.id,
+        existingCartItem.quantity + validatedData.quantity
+      );
+
+      return res.json(cartItem);
+    }
+
     const cartItem = await this._cartRepository.createCartItem({
       userId: req.user.id,
       productId: product.id,
