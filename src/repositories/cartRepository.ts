@@ -1,10 +1,32 @@
 import { injectable } from "inversify";
 import { ICartRepository } from "../interfaces/ICartRepository";
 import { prismaClient } from "..";
-import { CartItem } from "@prisma/client";
+import { CartItem, PrismaClient, Product } from "@prisma/client";
+import { ITXClientDenyList } from "@prisma/client/runtime/library";
 
 @injectable()
 export class CartRepository implements ICartRepository {
+  async _emptyCart(
+    prisma: Omit<PrismaClient, ITXClientDenyList>,
+    userId: number
+  ): Promise<void> {
+    await prisma.cartItem.deleteMany({
+      where: { userId },
+    });
+  }
+
+  async _getCartById(
+    prisma: Omit<PrismaClient, ITXClientDenyList>,
+    userId: number
+  ): Promise<({ product: Product } & CartItem)[]> {
+    const cart = await prisma.cartItem.findMany({
+      where: { userId },
+      include: { product: true },
+    });
+
+    return cart;
+  }
+
   async createCartItem(cartData: any): Promise<CartItem> {
     const cartItem = await prismaClient.cartItem.create({
       data: cartData,
@@ -18,7 +40,9 @@ export class CartRepository implements ICartRepository {
     });
   }
 
-  async getCartById(userId: number): Promise<CartItem[]> {
+  async getCartById(
+    userId: number
+  ): Promise<({ product: Product } & CartItem)[]> {
     const cart = await prismaClient.cartItem.findMany({
       where: { userId },
       include: { product: true },
